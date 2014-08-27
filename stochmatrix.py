@@ -10,6 +10,25 @@ from scipy.sparse import csgraph
 
 
 class StochMatrix(np.matrix):
+    """
+    Add structure as a directed graph.
+
+    Parameters
+    ----------
+    P : array_like(float, ndim=2)
+        Stochastic matrix. Must be of shape n x n.
+
+    Attributes
+    ----------
+    is_irreducible : bool
+        Indicate whether P is an irreducible matrix.
+
+    Methods
+    -------
+    comm_classes
+    rec_classes
+
+    """
 
     def __init__(self, P):
         n, m = P.shape
@@ -81,6 +100,15 @@ class StochMatrix(np.matrix):
         return self._rec_classes_labels
 
     def comm_classes(self):
+        """
+        Returns the communication classes (strongly connected components) of P
+
+        Returns
+        -------
+        list(list(int))
+            List of lists that contains the communication classes
+
+        """
         if self.is_irreducible:
             return [range(self.n)]
         else:
@@ -88,6 +116,15 @@ class StochMatrix(np.matrix):
                     for i in range(self.num_comm_classes)]
 
     def rec_classes(self):
+        """
+        Returns the recurrent classes (closed ommunication classes) of P
+
+        Returns
+        -------
+        list(list(int))
+            List of lists that contains the recurrent classes
+
+        """
         if self.is_irreducible:
             return [range(self.n)]
         else:
