@@ -14,7 +14,7 @@ except:  # python3
     xrange = range
 
 
-def mc_compute_stationary(P):
+def stationary_dists(P):
     r"""
     This function computes the stationary distributions of P.
 
@@ -25,22 +25,25 @@ def mc_compute_stationary(P):
 
     Returns
     -------
-    numpy.ndarray(float, ndim=2)
+    stationary_dists : numpy.ndarray(float, ndim=2)
         Array that contains the stationary distributions of P
         as its rows.
+
     """
+    P = StochMatrix(P)
+
     n = P.shape[0]
 
     if P.is_irreducible:
-        stationary_dists_list = stoch_eig(P).reshape(1, n)
+        stationary_dists = stoch_eig(P).reshape(1, n)
     else:
         rec_classes = P.rec_classes()
-        stationary_dists_list = np.zeros((len(rec_classes), n))
+        stationary_dists = np.zeros((len(rec_classes), n))
         for i, rec_class in enumerate(rec_classes):
-            stationary_dists_list[i, rec_class] = \
+            stationary_dists[i, rec_class] = \
                 stoch_eig(P[rec_class, :][:, rec_class])
 
-    return stationary_dists_list
+    return stationary_dists
 
 
 class StochMatrix(np.matrix):
