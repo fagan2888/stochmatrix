@@ -30,6 +30,8 @@ class StochMatrix(np.ndarray):
 
     """
 
+    # Subclassing numpy.ndarray
+    # docs.scipy.org/doc/numpy/user/basics.subclassing.html
     def __new__(subtype, P):
         arr = np.array(P, dtype=float)
         ndim = arr.ndim
@@ -110,8 +112,9 @@ class StochMatrix(np.ndarray):
         return self._rec_classes_labels
 
     def comm_classes(self):
-        """
-        Returns the communication classes (strongly connected components) of P
+        r"""
+        Return the communication classes (strongly connected components)
+        of `P`.
 
         Returns
         -------
@@ -126,8 +129,9 @@ class StochMatrix(np.ndarray):
                     for i in range(self.num_comm_classes)]
 
     def rec_classes(self):
-        """
-        Returns the recurrent classes (closed communication classes) of P
+        r"""
+        Return the recurrent classes (closed communication classes) of
+        `P`.
 
         Returns
         -------
@@ -155,7 +159,8 @@ class StochMatrix(np.ndarray):
 
 def stationary_dists(P):
     r"""
-    This function computes the stationary distributions of P.
+    This routine computes the stationary distributions of a stochastic
+    matrix `P`.
 
     Parameters
     ----------
@@ -165,7 +170,7 @@ def stationary_dists(P):
     Returns
     -------
     stationary_dists : numpy.ndarray(float, ndim=2)
-        Array containing the stationary distributions of P as its rows.
+        Array containing the stationary distributions of `P` as its rows.
 
     """
     if not isinstance(P, StochMatrix):
@@ -188,47 +193,43 @@ def stationary_dists(P):
 # From https://github.com/oyamad/numpy_eigen_markov
 def gth_solve(A, overwrite=False):
     r"""
-    This routine computes the nontrivial solution to `x A = 0` for an
-    irreducible transition rate matrix `A`, by using the
-    Grassmann-Taksar-Heyman (GTH) algorithm, a numerically stable
-    variant of Gaussian elimination. The solution is normalized so that
-    its 1-norm equals one.
+    This routine computes the stationary distribution of an irreducible
+    stochastic matrix `A`.
 
-    In fact, the algorithm employed solves `x B = 0` where
-    :math:`B_{ij} = A_{ij}` for :math:`j \neq i` and
-    :math:`B_{ii} = \sum_{j \neq i} A_{ij}` (so that `B = A` if `A` is a
-    transition rate matrix). Therefore, if `A` is an irreducible
-    stochastic matrix, then ``gth_solve(A)`` returns the stationary
-    distribution vector of `A`, since in this case `B = A - I` (where
-    `I` is the identity matrix) so that the equation actually solved is
-    `x (A - I) = 0`, or `x A = x`.
+    More generally, given a Metzler matrix (square matrix whose
+    off-diagonal entries are all nonnegative) `A`, this routine solves
+    for a nonzero solution `x` to `x (A - D) = 0`, where `D` is the
+    diagonal matrix for which the rows of `A - D` sum to zero (i.e.,
+    :math:`D_{ii} = \sum_j A_{ij}` for all :math:`i`). One (and only
+    one, up to normalization) nonzero solution exists corresponding to
+    each reccurent class of `A`, and in particular, if `A` is
+    irreducible, in which case there is a unique solution; where there
+    are more than one, the solution that involves the recurrent state
+    with a smallest index is returned. The solution is normalized so
+    that its 1-norm equals one. This routine implements the
+    Grassmann-Taksar-Heyman (GTH) algorithm, a numerically stable
+    variant of Gaussian elimination, which only uses the off-diagonal
+    entries of `A` as the input data.
 
     Parameters
     ----------
     A : array_like(float, ndim=2)
-        Transition rate matrix. Must be of shape n x n.
+        Stochastic matrix. Must be of shape n x n.
     overwrite : bool, optional(default=False)
-        Whether to overwrite A; may improve performance.
+        Whether to overwrite `A`; may improve performance.
 
     Returns
     -------
     x : numpy.ndarray(float, ndim=1)
-        Non-zero solution to x A = 0, normalized so that its 1-norm
-        equals one.
+        Stationary distribution of `A`.
 
     Examples
     --------
-    >>> A = np.array([[-0.1, 0.075, 0.025], [0.15, -0.2, 0.05], [0.25, 0.25, -0.5]])
-    >>> x = gth_solve(A)
+    >>> A = np.array([[0.9, 0.075, 0.025], [0.15, 0.8, 0.05], [0.25, 0.25, 0.5]])
+    >>> x = gth_solve(P)
     >>> print x
     [ 0.625   0.3125  0.0625]
-    >>> print np.dot(x, A)
-    [ 0.  0.  0.]
-    >>> P = np.array([[0.9, 0.075, 0.025], [0.15, 0.8, 0.05], [0.25, 0.25, 0.5]])
-    >>> y = gth_solve(P)
-    >>> print y
-    [ 0.625   0.3125  0.0625]
-    >>> print np.dot(y, P)
+    >>> print np.dot(x, P)
     [ 0.625   0.3125  0.0625]
 
     """
