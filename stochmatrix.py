@@ -30,11 +30,11 @@ class StochMatrix(np.ndarray):
 
     """
 
-    def __new__(subtype, data):
-        arr = np.array(data, dtype=float)
+    def __new__(subtype, P):
+        arr = np.array(P, dtype=float)
         ndim = arr.ndim
         if ndim != 2:
-            raise ValueError("matrix must be 2-dimensional")
+            raise ValueError('matrix must be 2-dimensional')
         n, m = arr.shape
         if n != m:
             raise ValueError('matrix must be square')
@@ -165,8 +165,7 @@ def stationary_dists(P):
     Returns
     -------
     stationary_dists : numpy.ndarray(float, ndim=2)
-        Array that contains the stationary distributions of P
-        as its rows.
+        Array containing the stationary distributions of P as its rows.
 
     """
     if not isinstance(P, StochMatrix):
@@ -175,70 +174,34 @@ def stationary_dists(P):
     n = P.shape[0]
 
     if P.is_irreducible:
-        stationary_dists = stoch_eig(P).reshape(1, n)
+        stationary_dists = gth_solve(P).reshape(1, n)
     else:
         rec_classes = P.rec_classes()
         stationary_dists = np.zeros((len(rec_classes), n))
         for i, rec_class in enumerate(rec_classes):
             stationary_dists[i, rec_class] = \
-                stoch_eig(P[rec_class, :][:, rec_class])
+                gth_solve(P[rec_class, :][:, rec_class])
 
     return stationary_dists
 
 
 # From https://github.com/oyamad/numpy_eigen_markov
-
-def stoch_eig(P, overwrite=False):
-    r"""
-    This routine returns the stochastic eigenvector (stationary
-    probability distribution vector) of an irreducible stochastic matrix
-    *P*, i.e., the solution to `x P = x`, normalized so that its 1-norm
-    equals one. Internally, the routine passes the input to the
-    ``gth_solve`` routine.
-
-    Parameters
-    ----------
-    P : array_like(float, ndim=2)
-        Stochastic matrix. Must be of shape n x n.
-    overwrite : bool, optional(default=False)
-        Whether to overwrite P; may improve performance.
-
-    Returns
-    -------
-    x : numpy.ndarray(float, ndim=1)
-        Stochastic eigenvalue (stationary distribution) of P, i.e., the
-        solution to x P = x, normalized so that its 1-norm equals one.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from eigen_markov import stoch_eig
-    >>> P = np.array([[0.9, 0.075, 0.025], [0.15, 0.8, 0.05], [0.25, 0.25, 0.5]])
-    >>> x = stoch_eig(P)
-    >>> print x
-    [ 0.625   0.3125  0.0625]
-    >>> print np.dot(x, P)
-    [ 0.625   0.3125  0.0625]
-
-    """
-    # In fact, stoch_eig, which for the user is a routine to solve
-    # x P = x, or x (P - I) = 0, is just another name of the function
-    # gth_solve, which solves x A = 0, where the GTH algorithm,
-    # the algorithm used there, does not use the actual values of
-    # the diagonals of A, under the assumption that
-    # A_{ii} = \sum_{j \neq i} A_{ij}, and therefore,
-    # gth_solve(P-I) = gth_solve(P), so that it is irrelevant whether to
-    # pass P or P - I to gth_solve.
-    return gth_solve(P, overwrite=overwrite)
-
-
 def gth_solve(A, overwrite=False):
     r"""
-    This routine computes a nontrivial solution of a linear equation
-    system of the form `x A = 0`, where *A* is an irreducible transition
-    rate matrix, by using the Grassmann-Taksar-Heyman (GTH) algorithm, a
+    This routine computes the nontrivial solution to `x A = 0` for an
+    irreducible transition rate matrix `A`, by using the
+    Grassmann-Taksar-Heyman (GTH) algorithm, a numerically stable
     variant of Gaussian elimination. The solution is normalized so that
     its 1-norm equals one.
+
+    In fact, the algorithm employed solves `x B = 0` where
+    :math:`B_{ij} = A_{ij}` for :math:`j \neq i` and
+    :math:`B_{ii} = \sum_{j \neq i} A_{ij}` (so that `B = A` if `A` is a
+    transition rate matrix). Therefore, if `A` is an irreducible
+    stochastic matrix, then ``gth_solve(A)`` returns the stationary
+    distribution vector of `A`, since in this case `B = A - I` (where
+    `I` is the identity matrix) so that the equation actually solved is
+    `x (A - I) = 0`, or `x A = x`.
 
     Parameters
     ----------
@@ -255,14 +218,18 @@ def gth_solve(A, overwrite=False):
 
     Examples
     --------
-    >>> import numpy as np
-    >>> from eigen_markov import gth_solve
     >>> A = np.array([[-0.1, 0.075, 0.025], [0.15, -0.2, 0.05], [0.25, 0.25, -0.5]])
     >>> x = gth_solve(A)
     >>> print x
     [ 0.625   0.3125  0.0625]
     >>> print np.dot(x, A)
     [ 0.  0.  0.]
+    >>> P = np.array([[0.9, 0.075, 0.025], [0.15, 0.8, 0.05], [0.25, 0.25, 0.5]])
+    >>> y = gth_solve(P)
+    >>> print y
+    [ 0.625   0.3125  0.0625]
+    >>> print np.dot(y, P)
+    [ 0.625   0.3125  0.0625]
 
     """
     A1 = np.array(A, copy=not overwrite)
