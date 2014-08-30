@@ -247,10 +247,10 @@ def gth_solve(A, overwrite=False):
     Examples
     --------
     >>> A = np.array([[0.9, 0.075, 0.025], [0.15, 0.8, 0.05], [0.25, 0.25, 0.5]])
-    >>> x = gth_solve(P)
+    >>> x = gth_solve(A)
     >>> print x
     [ 0.625   0.3125  0.0625]
-    >>> print np.dot(x, P)
+    >>> print np.dot(x, A)
     [ 0.625   0.3125  0.0625]
 
     """
@@ -273,8 +273,9 @@ def gth_solve(A, overwrite=False):
             break
         A1[i+1:n, i] /= scale
 
-        for j in xrange(i+1, n):
-            A1[i+1:n, j] += A1[i, j] * A1[i+1:n, i]
+        #for j in xrange(i+1, n):
+        #    A1[i+1:n, j] += A1[i, j] * A1[i+1:n, i]
+        A1[i+1:n, i+1:n] += np.dot(A1[i+1:n, i:i+1], A1[i:i+1, i+1:n])
 
     # === Backward substitution === #
     x[n-1] = 1
