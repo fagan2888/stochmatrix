@@ -225,12 +225,13 @@ def gth_solve(A, overwrite=False):
     one, up to normalization) nonzero solution exists corresponding to
     each reccurent class of `A`, and in particular, if `A` is
     irreducible, in which case there is a unique solution; where there
-    are more than one, the solution that involves the recurrent state
-    with a smallest index is returned. The solution is normalized so
-    that its 1-norm equals one. This routine implements the
-    Grassmann-Taksar-Heyman (GTH) algorithm, a numerically stable
-    variant of Gaussian elimination, which only uses the off-diagonal
-    entries of `A` as the input data.
+    are more than one, the routine returns the solution that involves
+    the first index `i` such that no path connects `i` to any index
+    larger than `i`. The solution is normalized so that its 1-norm
+    equals one. This routine implements the Grassmann-Taksar-Heyman
+    (GTH) algorithm, a numerically stable variant of Gaussian
+    elimination, where only the off-diagonal entries of `A` are used as
+    the input data.
 
     Parameters
     ----------
@@ -267,8 +268,9 @@ def gth_solve(A, overwrite=False):
     for i in xrange(n-1):
         scale = np.sum(A1[i, i+1:n])
         if scale <= 0:
-            # Only consider the leading principal minor of size i+1,
-            # which is irreducible
+            # There is one (and only one) recurrent class contained in
+            # {0, ..., i};
+            # compute the solution associated with that recurrent class.
             n = i+1
             break
         A1[i+1:n, i] /= scale
