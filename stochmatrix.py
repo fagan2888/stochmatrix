@@ -16,17 +16,19 @@ except:  # python3
 
 class StochMatrix(np.ndarray):
     r"""
-    Add structure as a directed graph to numpy.ndarray.
+    Add structure as a directed graph to a numpy.ndarray of a stochastic
+    matrix. In particular, methods that return the communication classes
+    and the reccurent classes are implemented.
 
     Parameters
     ----------
-    P : array_like(float, ndim=2)
-        Stochastic matrix. Must be of shape n x n.
+    input_array : array_like(float, ndim=2)
+        Array representing a stochastic matrix. Must be of shape n x n.
 
     Attributes
     ----------
     is_irreducible : bool
-        Indicate whether P is an irreducible matrix.
+        Indicate whether the array is an irreducible matrix.
 
     num_comm_classes : int
         Number of communication classes.
@@ -38,8 +40,8 @@ class StochMatrix(np.ndarray):
 
     # Subclassing numpy.ndarray
     # docs.scipy.org/doc/numpy/user/basics.subclassing.html
-    def __new__(cls, P):
-        obj = np.asarray(P).view(cls)
+    def __new__(cls, input_array):
+        obj = np.asarray(input_array).view(cls)
         ndim = obj.ndim
         if ndim != 2:
             raise ValueError('matrix must be 2-dimensional')
@@ -131,8 +133,7 @@ class StochMatrix(np.ndarray):
 
     def comm_classes(self):
         r"""
-        Return the communication classes (strongly connected components)
-        of `P`.
+        Return the communication classes (strongly connected components).
 
         Returns
         -------
@@ -148,8 +149,7 @@ class StochMatrix(np.ndarray):
 
     def rec_classes(self):
         r"""
-        Return the recurrent classes (closed communication classes) of
-        `P`.
+        Return the recurrent classes (closed communication classes).
 
         Returns
         -------
