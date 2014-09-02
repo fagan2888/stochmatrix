@@ -275,8 +275,6 @@ def gth_solve(A, overwrite=False):
             break
         A1[i+1:n, i] /= scale
 
-        #for j in xrange(i+1, n):
-        #    A1[i+1:n, j] += A1[i, j] * A1[i+1:n, i]
         A1[i+1:n, i+1:n] += np.dot(A1[i+1:n, i:i+1], A1[i:i+1, i+1:n])
 
     # === Backward substitution === #
