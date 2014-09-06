@@ -250,10 +250,10 @@ def gth_solve(A, overwrite=False):
     """
     A1 = np.array(A, copy=not overwrite)
 
-    n, m = A1.shape
-
-    if n != m:
+    if len(A1.shape) != 2 or A1.shape[0] != A1.shape[1]:
         raise ValueError('matrix must be square')
+
+    n = A1.shape[0]
 
     x = np.zeros(n)
 
