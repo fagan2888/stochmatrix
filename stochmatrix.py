@@ -3,6 +3,8 @@ Filename: stochmatrix.py
 
 Author: Daisuke Oyama
 
+Tools for dealing with a stochastic matrix.
+
 """
 import numpy as np
 from scipy import sparse
@@ -17,8 +19,8 @@ except:  # python3
 class StochMatrix(np.ndarray):
     r"""
     Add structure as a directed graph to a numpy.ndarray of a stochastic
-    matrix. In particular, methods that return the communication classes
-    and the reccurent classes are implemented.
+    matrix. In particular, implement methods that find communication
+    classes and reccurent classes.
 
     Parameters
     ----------
@@ -244,15 +246,6 @@ def gth_solve(A, overwrite=False):
     -------
     x : numpy.ndarray(float, ndim=1)
         Stationary distribution of `A`.
-
-    Examples
-    --------
-    >>> A = np.array([[0.9, 0.075, 0.025], [0.15, 0.8, 0.05], [0.25, 0.25, 0.5]])
-    >>> x = gth_solve(A)
-    >>> print x
-    [ 0.625   0.3125  0.0625]
-    >>> print np.dot(x, A)
-    [ 0.625   0.3125  0.0625]
 
     """
     A1 = np.array(A, copy=not overwrite)
