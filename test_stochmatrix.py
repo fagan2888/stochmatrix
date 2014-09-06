@@ -145,7 +145,7 @@ class TestStochmatrix:
 
 def test_stationary_dists():
     """Test stationary_dists"""
-    print __name__ + '.' + test_stationary_dists.__name__
+    print(__name__ + '.' + test_stationary_dists.__name__)
     matrices = Matrices()
     for matrix_dict in matrices.matrix_dicts:
         dists = stationary_dists(matrix_dict['P'])
@@ -157,9 +157,10 @@ def test_stationary_dists():
 
 
 def test_gth_solve():
-    """Test gth_solve; use only irreducible matrices"""
-    print __name__ + '.' + test_gth_solve.__name__
+    """Test gth_solve"""
+    print(__name__ + '.' + test_gth_solve.__name__)
     matrices = Matrices()
+    # Use only irreducible matrices
     for matrix_dict in matrices.irreducible_matrix_dicts:
         x = gth_solve(matrix_dict['P'])
         yield StationaryDistSumOne(), x
@@ -171,17 +172,21 @@ class AddDescription:
     def __init__(self):
         self.description = self.__class__.__name__
 
+
 class NumStationaryDists(AddDescription):
     def __call__(self, dists, n):
         eq_(len(dists), n)
+
 
 class StationaryDistSumOne(AddDescription):
     def __call__(self, x):
         ok_(np.allclose(sum(x), 1, atol=TOL))
 
+
 class StationaryDistNonnegative(AddDescription):
     def __call__(self, x):
         eq_(np.prod(x >= 0-TOL), 1)
+
 
 class StationaryDistLeftEigenVec(AddDescription):
     def __call__(self, P, x):

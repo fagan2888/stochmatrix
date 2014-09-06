@@ -142,7 +142,7 @@ class StochMatrix(np.ndarray):
 
         """
         if self.is_irreducible:
-            return [range(self.n)]
+            return [list(range(self.n))]
         else:
             return [np.where(self.comm_classes_proj == k)[0].tolist()
                     for k in range(self.num_comm_classes)]
@@ -158,7 +158,7 @@ class StochMatrix(np.ndarray):
 
         """
         if self.is_irreducible:
-            return [range(self.n)]
+            return [list(range(self.n))]
         else:
             return [np.where(self.comm_classes_proj == k)[0].tolist()
                     for k in self.rec_classes_labels]
