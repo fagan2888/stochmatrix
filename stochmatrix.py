@@ -112,9 +112,10 @@ class StochMatrix(np.ndarray):
         except ValueError:
             edges_iter = ()
 
-        for edge in edges_iter:
+        comm_classes_proj = self.comm_classes_proj
+        for state_from, state_to in edges_iter:
             comm_class_from, comm_class_to = \
-                self.comm_classes_proj[np.array(edge)]
+                comm_classes_proj[state_from], comm_classes_proj[state_to]
             if comm_class_from != comm_class_to:
                 digraph_quo[comm_class_from].add(comm_class_to)
 
