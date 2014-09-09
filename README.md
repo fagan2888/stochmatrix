@@ -3,4 +3,7 @@ stochmatrix
 
 Routines for stochastic matrices
 
-* [Examples](http://nbviewer.ipython.org/github/oyamad/stochmatrix/blob/master/examples01.ipynb)
+* [Illustration 1](http://nbviewer.ipython.org/github/oyamad/stochmatrix/blob/master/stochmatrix_demo01.ipynb):
+  stochmatrix
+* [Illustration 2](http://nbviewer.ipython.org/github/oyamad/stochmatrix/blob/master/dmarkov_demo01.ipynb):
+  mc_tools2
