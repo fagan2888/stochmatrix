@@ -232,7 +232,7 @@ def gth_solve(A, overwrite=False):
     the first index `i` such that no path connects `i` to any index
     larger than `i`. The solution is normalized so that its 1-norm
     equals one. This routine implements the Grassmann-Taksar-Heyman
-    (GTH) algorithm, a numerically stable variant of Gaussian
+    (GTH) algorithm [1]_, a numerically stable variant of Gaussian
     elimination, where only the off-diagonal entries of `A` are used as
     the input data.
 
@@ -247,6 +247,12 @@ def gth_solve(A, overwrite=False):
     -------
     x : numpy.ndarray(float, ndim=1)
         Stationary distribution of `A`.
+
+    References
+    ----------
+    .. [1] W. K. Grassmann, M. I. Taksar and D. P. Heyman, "Regenerative
+       Analysis and Steady State Distributions for Markov Chains,"
+       Operations Research (1985), 1107-1116.
 
     """
     A1 = np.array(A, copy=not overwrite)
